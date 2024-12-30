@@ -17,8 +17,5 @@ dependencies:
   - torchvision=0.11.2
   - tqdm=4.66.5
   - scikit-image=0.20.0
-  - tensorboard
-  - setuptools
-  - packaging
   - pip:
     - opencv-contrib-python==4.8.0.74
