@@ -19,7 +19,7 @@ from raft import RAFT
 import evaluate
 import datasets
 
-from torch.utils.tensorboard import SummaryWriter
+# from torch.utils.tensorboard import SummaryWriter
 
 try:
     from torch.cuda.amp import GradScaler
@@ -92,7 +92,7 @@ class Logger:
         self.scheduler = scheduler
         self.total_steps = 0
         self.running_loss = {}
-        self.writer = None
+        # self.writer = None
 
     def _print_training_status(self):
         metrics_data = [self.running_loss[k]/SUM_FREQ for k in sorted(self.running_loss.keys())]
@@ -102,8 +102,8 @@ class Logger:
         # print the training status
         print(training_str + metrics_str)
 
-        if self.writer is None:
-            self.writer = SummaryWriter()
+        # if self.writer is None:
+        #     self.writer = SummaryWriter()
 
         for k in self.running_loss:
             self.writer.add_scalar(k, self.running_loss[k]/SUM_FREQ, self.total_steps)
@@ -122,15 +122,15 @@ class Logger:
             self._print_training_status()
             self.running_loss = {}
 
-    def write_dict(self, results):
-        if self.writer is None:
-            self.writer = SummaryWriter()
+    # def write_dict(self, results):
+    #     # if self.writer is None:
+    #     #     self.writer = SummaryWriter()
 
-        for key in results:
-            self.writer.add_scalar(key, results[key], self.total_steps)
+    #     for key in results:
+    #         self.writer.add_scalar(key, results[key], self.total_steps)
 
-    def close(self):
-        self.writer.close()
+    # def close(self):
+    #     self.writer.close()
 
 
 def train(args):
@@ -182,24 +182,24 @@ def train(args):
 
             logger.push(metrics)
 
-            if total_steps % VAL_FREQ == VAL_FREQ - 1:
-                PATH = 'checkpoints/%d_%s.pth' % (total_steps+1, args.name)
-                torch.save(model.state_dict(), PATH)
+            # if total_steps % VAL_FREQ == VAL_FREQ - 1:
+            #     PATH = 'checkpoints/%d_%s.pth' % (total_steps+1, args.name)
+            #     torch.save(model.state_dict(), PATH)
 
-                results = {}
-                for val_dataset in args.validation:
-                    if val_dataset == 'chairs':
-                        results.update(evaluate.validate_chairs(model.module))
-                    elif val_dataset == 'sintel':
-                        results.update(evaluate.validate_sintel(model.module))
-                    elif val_dataset == 'kitti':
-                        results.update(evaluate.validate_kitti(model.module))
+            #     results = {}
+            #     for val_dataset in args.validation:
+            #         if val_dataset == 'chairs':
+            #             results.update(evaluate.validate_chairs(model.module))
+            #         elif val_dataset == 'sintel':
+            #             results.update(evaluate.validate_sintel(model.module))
+            #         elif val_dataset == 'kitti':
+            #             results.update(evaluate.validate_kitti(model.module))
 
-                logger.write_dict(results)
+            #     logger.write_dict(results)
                 
-                model.train()
-                if args.stage != 'chairs':
-                    model.module.freeze_bn()
+            # model.train()
+            # if args.stage != 'chairs':
+            #     model.module.freeze_bn()
             
             total_steps += 1
 

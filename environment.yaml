@@ -1,0 +1,24 @@
+name: raft
+channels:
+  - defaults
+  - conda-forge
+  - nvidia
+  - pytorch
+dependencies:
+  - matplotlib=3.5.2
+  - pandas=1.4.3
+  - python=3.8.0
+  - numpy=1.23.1
+  - scikit-learn=1.1.1
+  - scipy=1.8.1
+  - pip=22.1.2
+  - pytorch=1.10.1
+  - cudatoolkit=11.3
+  - torchvision=0.11.2
+  - tqdm=4.66.5
+  - scikit-image=0.20.0
+  - tensorboard
+  - setuptools
+  - packaging
+  - pip:
+    - opencv-contrib-python==4.8.0.74
