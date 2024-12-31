@@ -98,13 +98,15 @@ class FlowAugmentor:
                 img1 = img1[::-1, :]
                 img2 = img2[::-1, :]
                 flow = flow[::-1, :] * [1.0, -1.0]
-
-        y0 = np.random.randint(0, img1.shape[0] - self.crop_size[0])
-        x0 = np.random.randint(0, img1.shape[1] - self.crop_size[1])
         
-        img1 = img1[y0:y0+self.crop_size[0], x0:x0+self.crop_size[1]]
-        img2 = img2[y0:y0+self.crop_size[0], x0:x0+self.crop_size[1]]
-        flow = flow[y0:y0+self.crop_size[0], x0:x0+self.crop_size[1]]
+        # Only crop if the specified crop size is not the same as the shape of the image
+        if(self.crop_size[0] != img1.shape[0] or self.crop_size[1] != img1.shape[1]):
+            y0 = np.random.randint(0, img1.shape[0] - self.crop_size[0])
+            x0 = np.random.randint(0, img1.shape[1] - self.crop_size[1])
+            
+            img1 = img1[y0:y0+self.crop_size[0], x0:x0+self.crop_size[1]]
+            img2 = img2[y0:y0+self.crop_size[0], x0:x0+self.crop_size[1]]
+            flow = flow[y0:y0+self.crop_size[0], x0:x0+self.crop_size[1]]
 
         return img1, img2, flow
 

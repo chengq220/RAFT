@@ -1,13 +1,13 @@
 # RAFT
 This repository is forked from the source code of the following paper:
-[RAFT: Recurrent All Pairs Field Transforms for Optical Flow](https://arxiv.org/pdf/2003.12039.pdf)<br/>
 
-<img src="RAFT.png">
+[RAFT: Recurrent All Pairs Field Transforms for Optical Flow](https://arxiv.org/pdf/2003.12039.pdf)<br/>
 
 ## Requirements
 The environment can be installed using conda by running
 ```Shell
 conda env create -f environment.yaml
+conda activate raft
 ```
 
 ## Demos

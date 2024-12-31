@@ -132,7 +132,6 @@ class Logger:
     # def close(self):
     #     self.writer.close()
 
-
 def train(args):
 
     model = nn.DataParallel(RAFT(args), device_ids=args.gpus)
