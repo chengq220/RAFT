@@ -18,6 +18,7 @@ from torch.utils.data import DataLoader
 from raft import RAFT
 import evaluate
 import datasets
+from tqdm import tqdm
 
 # from torch.utils.tensorboard import SummaryWriter
 
@@ -106,7 +107,7 @@ class Logger:
         #     self.writer = SummaryWriter()
 
         for k in self.running_loss:
-            self.writer.add_scalar(k, self.running_loss[k]/SUM_FREQ, self.total_steps)
+            # self.writer.add_scalar(k, self.running_loss[k]/SUM_FREQ, self.total_steps)
             self.running_loss[k] = 0.0
 
     def push(self, metrics):
@@ -135,6 +136,10 @@ class Logger:
 def train(args):
 
     model = nn.DataParallel(RAFT(args), device_ids=args.gpus)
+    
+    PATH = 'checkpoints/%s' % args.name
+    os.makedirs(PATH, exist_ok=True)
+    
     print("Parameter Count: %d" % count_parameters(model))
 
     if args.restore_ckpt is not None:
@@ -149,16 +154,16 @@ def train(args):
     train_loader = datasets.fetch_dataloader(args)
     optimizer, scheduler = fetch_optimizer(args, model)
 
-    total_steps = 0
+    # total_steps = 0
     scaler = GradScaler(enabled=args.mixed_precision)
     logger = Logger(model, scheduler)
 
     VAL_FREQ = 5000
     add_noise = True
 
-    should_keep_training = True
-    while should_keep_training:
-
+    # should_keep_training = True
+    # while should_keep_training:
+    for ep in tqdm(range(args.epoch), desc="Epochs"):
         for i_batch, data_blob in enumerate(train_loader):
             optimizer.zero_grad()
             image1, image2, flow, valid = [x.cuda() for x in data_blob]
@@ -200,15 +205,15 @@ def train(args):
             # if args.stage != 'chairs':
             #     model.module.freeze_bn()
             
-            total_steps += 1
+            # total_steps += 1
 
-            if total_steps > args.num_steps:
-                should_keep_training = False
-                break
-
+            # if total_steps > args.num_steps:
+            #     should_keep_training = False
+            #     break
+        if(ep % args.save_freq == 0):
+            torch.save(model.state_dict(), os.path.join(PATH, f"ep_{ep}.pth"))
     logger.close()
-    PATH = 'checkpoints/%s.pth' % args.name
-    torch.save(model.state_dict(), PATH)
+
 
     return PATH
 
@@ -224,6 +229,7 @@ if __name__ == '__main__':
     parser.add_argument('--lr', type=float, default=0.00002)
     parser.add_argument('--num_steps', type=int, default=100000)
     parser.add_argument('--batch_size', type=int, default=6)
+    parser.add_argument('--epoch', type=int, default = 200)
     parser.add_argument('--image_size', type=int, nargs='+', default=[384, 512])
     parser.add_argument('--gpus', type=int, nargs='+', default=[0,1])
     parser.add_argument('--mixed_precision', action='store_true', help='use mixed precision')
@@ -235,6 +241,8 @@ if __name__ == '__main__':
     parser.add_argument('--dropout', type=float, default=0.0)
     parser.add_argument('--gamma', type=float, default=0.8, help='exponential weighting')
     parser.add_argument('--add_noise', action='store_true')
+    parser.add_argument('--save_freq', type=int, default=10)
+
     args = parser.parse_args()
 
     torch.manual_seed(1234)
