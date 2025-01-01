@@ -167,7 +167,6 @@ def train(args):
         for i_batch, data_blob in enumerate(train_loader):
             optimizer.zero_grad()
             image1, image2, flow, valid = [x.cuda() for x in data_blob]
-
             if args.add_noise:
                 stdv = np.random.uniform(0.0, 5.0)
                 image1 = (image1 + stdv * torch.randn(*image1.shape).cuda()).clamp(0.0, 255.0)
@@ -205,11 +204,10 @@ def train(args):
             # if args.stage != 'chairs':
             #     model.module.freeze_bn()
             
-            # total_steps += 1
+            total_steps += 1
 
-            # if total_steps > args.num_steps:
-            #     should_keep_training = False
-            #     break
+            if total_steps > args.num_steps:
+                break
         if(ep % args.save_freq == 0):
             torch.save(model.state_dict(), os.path.join(PATH, f"ep_{ep}.pth"))
     logger.close()
