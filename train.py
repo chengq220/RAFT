@@ -154,7 +154,7 @@ def train(args):
     train_loader = datasets.fetch_dataloader(args)
     optimizer, scheduler = fetch_optimizer(args, model)
 
-    # total_steps = 0
+    total_steps = 0
     scaler = GradScaler(enabled=args.mixed_precision)
     logger = Logger(model, scheduler)
 
